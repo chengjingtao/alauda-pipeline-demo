@@ -22,16 +22,6 @@ config:
   ports:
     - '8888'
   net: flannel
-registry:
-  image: index.alauda.cn/demo100/piggymetrics-registry
-  environment:
-    CONFIG_SERVICE_PASSWORD: admin
-  links:
-    - 'config:config'
-  alauda_lb: ALB
-  ports:
-    - 'haproxy-139-219-56-162:68761:8761/http'
-  net: flannel
 gateway:
   image: index.alauda.cn/demo100/piggymetrics-gateway
   environment:
