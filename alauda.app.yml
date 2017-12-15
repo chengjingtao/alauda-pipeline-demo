@@ -1,0 +1,12 @@
+seq2:
+  alauda_lb: ALB
+  net: flannel
+  image: index-staging.alauda.cn/testorg001/qausefulimages:helloworld
+  ports: ['80:80/http']
+  size: XXS
+seq1:
+  alauda_lb: ALB
+  net: flannel
+  image: index-staging.alauda.cn/testorg001/qausefulimages:helloworld
+  ports: ['80:80/http']
+  size: XXS
