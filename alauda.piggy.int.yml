@@ -1,0 +1,101 @@
+rabbitmq:
+  image: index.alauda.cn/demo100/rabbitmq:3-management
+  ports:
+    - '15672'
+    - '5672'
+  net: flannel
+data-mongodb:
+  image: index.alauda.cn/demo100/piggymetrics-mongodb
+  environment:
+    INIT_DUMP: account-service-dump.js
+    MONGODB_PASSWORD: admin 
+  ports:
+    - '27017'
+  net: flannel
+config:
+  image: index.alauda.cn/demo100/piggymetrics-config
+  environment:
+    CONFIG_SERVICE_PASSWORD: admin
+  links:
+    - 'rabbitmq:rabbitmq'
+    - 'data-mongodb:data-mongodb'
+  ports:
+    - '8888'
+  net: flannel
+registry:
+  image: index.alauda.cn/demo100/piggymetrics-registry
+  environment:
+    CONFIG_SERVICE_PASSWORD: admin
+  links:
+    - 'config:config'
+  alauda_lb: ALB
+  ports:
+    - 'haproxy-139-219-56-162:68761:8761/http'
+  net: flannel
+gateway:
+  image: index.alauda.cn/demo100/piggymetrics-gateway
+  environment:
+    CONFIG_SERVICE_PASSWORD: admin 
+  links:
+    - 'config:config'
+  alauda_lb: ALB
+  ports:
+    - 'haproxy-139-219-56-162:80:4000/http'
+  net: flannel
+auth-service:
+  image: index.alauda.cn/demo100/piggymetrics-auth-service
+  environment:
+      CONFIG_SERVICE_PASSWORD: admin
+      NOTIFICATION_SERVICE_PASSWORD: admin
+      STATISTICS_SERVICE_PASSWORD: admin
+      ACCOUNT_SERVICE_PASSWORD: admin
+      MONGODB_PASSWORD: admin
+  links:
+    - 'config:config'
+  ports:
+    - '5000'
+  net: flannel
+account-service:
+  image: index.alauda.cn/demo100/piggymetrics-account-service
+  environment:
+    CONFIG_SERVICE_PASSWORD: admin
+    ACCOUNT_SERVICE_PASSWORD: admin
+    MONGODB_PASSWORD: admin
+  links:
+    - 'config:config'
+  ports:
+    - '6000'
+  net: flannel
+statistics-service:
+  image: index.alauda.cn/demo100/piggymetrics-statistics-service
+  environment:
+    CONFIG_SERVICE_PASSWORD: admin
+    MONGODB_PASSWORD: admin
+    STATISTICS_SERVICE_PASSWORD: admin
+  links:
+    - 'config:config'
+  ports:
+    - '7000'
+  net: flannel
+notification-service:
+  image: index.alauda.cn/demo100/piggymetrics-notification-service
+  environment:
+    CONFIG_SERVICE_PASSWORD: admin
+    MONGODB_PASSWORD: admin
+    NOTIFICATION_SERVICE_PASSWORD: admin
+  links:
+    - 'config:config'
+  ports:
+    - '8000'
+  net: flannel
+monitoring:
+  image: index.alauda.cn/demo100/piggymetrics-monitoring
+  environment:
+    CONFIG_SERVICE_PASSWORD: admin
+  links:
+    - 'config:config'
+  alauda_lb: ALB
+  ports:
+    - 'haproxy-139-219-56-162:69000:8080/http'
+    - '8989'
+  net: flannel
