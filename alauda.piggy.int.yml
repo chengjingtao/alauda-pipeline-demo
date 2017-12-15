@@ -88,14 +88,3 @@ notification-service:
   ports:
     - '8000'
   net: flannel
-monitoring:
-  image: index.alauda.cn/demo100/piggymetrics-monitoring
-  environment:
-    CONFIG_SERVICE_PASSWORD: admin
-  links:
-    - 'config:config'
-  alauda_lb: ALB
-  ports:
-    - 'haproxy-139-219-56-162:69000:8080/http'
-    - '8989'
-  net: flannel
